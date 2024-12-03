@@ -105,7 +105,9 @@ function renderFilmData(film) {
         <div class="film__desc">
           <p class="film__details">Год: ${film.year}</p>
           <p class="film__details">Рейтинг: ${film.ratingKinopoisk}</p>
-          <p class="film__details">Продолжительность: ${film.filmLength}</p>
+          <p class="film__details">Продолжительность: ${formatFilmLength(
+            film.filmLength
+          )}</p>
           <p class="film__details">Страна: ${film.countries[0]["country"]}</p>
           <p class="film_text">
           ${film.description}
@@ -114,6 +116,18 @@ function renderFilmData(film) {
       </div>`;
 
   containerRight.insertAdjacentHTML("beforeend", html);
+}
+
+function formatFilmLength(value) {
+  let length = "";
+
+  const hours = Math.floor(value / 60);
+  const minutes = value % 60;
+
+  if (hours > 0) length += `${hours} ч.`;
+  if (minutes > 0) length += ` ${minutes} мин.`;
+
+  return length;
 }
 
 fetchAndRenderFilms().catch((err) => console.log(err));
