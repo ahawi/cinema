@@ -6,7 +6,7 @@
   display: inline-block;
   width: 80px;
   height: 80px;
-  color: rgb(249, 104, 135);
+  color: #4845fe;
 }
 .lds-dual-ring:after {
   content: " ";
