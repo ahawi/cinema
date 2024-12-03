@@ -14,7 +14,6 @@ const options = {
 const filmsWrapper = document.querySelector(".films");
 const loader = document.querySelector(".loader-wrapper");
 const buttonShowMore = document.querySelector(".show-more");
-
 buttonShowMore.onclick = fetchAndRenderFilms;
 
 let page = 1;
@@ -50,16 +49,71 @@ async function fetchData(url, options) {
 
 function renderFilms(films) {
   for (film of films) {
-    const html = `<div class="films">
-            <div class="card">
+    const card = document.createElement("div");
+    card.classList.add("card");
+    card.id = film.filmId;
+
+    card.onclick = openFilmDetails;
+
+    const html = `
               <img src=${film.posterUrlPreview} alt="Cover" class="card__img" />
               <h3 class="card__title">${film.nameRu}</h3>
               <p class="card__year">${film.year}</p>
               <p class="card__rate">Рейтинг: ${film.rating}</p>
-            </div>`;
+            `;
 
-    filmsWrapper.insertAdjacentHTML("beforeend", html);
+    card.insertAdjacentHTML("afterbegin", html);
+
+    filmsWrapper.insertAdjacentElement("beforeend", card);
   }
+
+  async function openFilmDetails(event) {
+    const id = event.currentTarget.id;
+
+    const data = await fetchData(`${url}${id}`, options);
+
+    renderFilmData(data);
+  }
+}
+
+function renderFilmData(film) {
+  const prevContainer = document.querySelector(".container-right");
+  prevContainer ? prevContainer.remove() : "";
+
+  const containerRight = document.createElement("div");
+  containerRight.classList.add("container-right");
+  document.body.insertAdjacentElement("beforeend", containerRight);
+
+  const buttonClose = document.createElement("button");
+
+  buttonClose.classList.add("btn-close");
+  buttonClose.innerHTML =
+    '<img src="./images/cross.svg" alt="Close" width="24" />';
+  containerRight.insertAdjacentElement("afterbegin", buttonClose);
+
+  buttonClose.onclick = () => {
+    containerRight.remove();
+  };
+
+  const html = ` <div class="film">
+        <div class="film__title">${film.nameRu}</div>
+
+        <div class="film__img">
+          <img src=${film.posterUrl} alt=${film.nameRu} />
+        </div>
+
+        <div class="film__desc">
+          <p class="film__details">Год: ${film.year}</p>
+          <p class="film__details">Рейтинг: ${film.ratingKinopoisk}</p>
+          <p class="film__details">Продолжительность: ${film.filmLength}</p>
+          <p class="film__details">Страна: ${film.countries[0]["country"]}</p>
+          <p class="film_text">
+          ${film.description}
+          </p>
+        </div>
+      </div>`;
+
+  containerRight.insertAdjacentHTML("beforeend", html);
 }
 
 fetchAndRenderFilms().catch((err) => console.log(err));
